@@ -1,0 +1,169 @@
+@import "../../public/webfonts/css/fontiran.css";
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171719;
+  --primary: #202020;
+  --border: rgba(130, 140, 150, 0.1);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: #ffffff !important;
+  color: #171719;
+  font-family: IRAN, Arial, Helvetica, sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+/* Sidebar Styles */
+.side-bar {
+  position: fixed;
+  right: 0;
+  height: calc(100vh - 80px);
+  border-left: 1px solid #e5e7eb;
+  top: 80px;
+  width: 240px;
+  padding-right: 24px;
+  padding-top: 24px;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+}
+
+/* Main Menu Styles */
+.main-menu {
+  height: 80px;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 30px;
+  padding-left: 30px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+}
+
+/* Location Box Styles */
+.location-box {
+  display: flex;
+  gap: 12px;
+  padding: 8px 16px;
+  align-items: center;
+  border-radius: 16px;
+  background-color: #f8f9fa;
+  text-align: center;
+  justify-content: center;
+  align-content: center;
+  transition: all 0.2s ease;
+}
+
+.location-box:hover {
+  background-color: #f1f3f4;
+  transform: translateY(-1px);
+}
+
+/* Login Button Styles */
+.login-btn {
+  padding: 8px 20px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* File Cart Styles */
+.file-cart--main {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.file-cart--main:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Main Content Styles */
+.main-contact {
+  margin-right: 240px;
+  padding-right: 32px;
+  padding-left: 32px;
+  padding-top: 100px;
+  max-width: calc(100% - 240px);
+  min-height: calc(100vh - 80px);
+  background: #fafafa;
+}
+
+/* File Cart Footer */
+.file-cart-footer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.file-cart-sub-title {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+/* Utility Classes */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .side-bar {
+    width: 200px;
+  }
+  
+  .main-contact {
+    margin-right: 200px;
+    max-width: calc(100% - 200px);
+  }
+}
+
+@media (max-width: 768px) {
+  .side-bar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    top: 0;
+    border-left: none;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .main-contact {
+    margin-right: 0;
+    max-width: 100%;
+    padding: 16px;
+  }
+  
+  .main-menu {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}

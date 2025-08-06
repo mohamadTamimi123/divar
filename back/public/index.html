@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم املاک هوشمند - جستجو و تطبیق ملک‌ها</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --dark-color: #343a40;
+            --light-color: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazir', 'Tahoma', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary-hero {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary-hero:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-outline-hero {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-outline-hero:hover {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        /* Features Section */
+        .features-section {
+            background: white;
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 3rem;
+            color: var(--dark-color);
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 1px solid #e9ecef;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .feature-description {
+            color: #6c757d;
+            line-height: 1.6;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: var(--light-color);
+            padding: 60px 0;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .search-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Properties Section */
+        .properties-section {
+            background: white;
+            padding: 60px 0;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 1px solid #e9ecef;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .property-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .property-type-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .property-content {
+            padding: 1.5rem;
+        }
+
+        .property-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .property-location {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .property-price {
+            font-weight: bold;
+            color: var(--success-color);
+            font-size: 1.1rem;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+        }
+
+        .nav-link {
+            color: var(--dark-color) !important;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .nav-link.active {
+            color: var(--primary-color) !important;
+            font-weight: bold;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 60px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        /* Alert Styles */
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        /* Pagination */
+        .pagination {
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .page-link {
+            border-radius: 8px;
+            margin: 0 2px;
+            border: none;
+            color: var(--primary-color);
+        }
+
+        .page-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .page-item.active .page-link {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Hide sections initially */
+        #properties-section, #clients-section, #subscription-section {
+            display: none;
+        }
+
+        /* Show active section */
+        .section-active {
+            display: block !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-home me-2"></i>
+                سیستم املاک هوشمند
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showProperties()">
+                            <i class="fas fa-search me-1"></i>
+                            جستجوی ملک
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showClients()">
+                            <i class="fas fa-users me-1"></i>
+                            مدیریت مشتریان
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSubscription()">
+                            <i class="fas fa-crown me-1"></i>
+                            اشتراک ویژه
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="navbar-nav" id="auth-buttons">
+                    <button class="btn btn-outline-primary me-2" onclick="showLoginModal()">
+                        <i class="fas fa-sign-in-alt me-1"></i>
+                        ورود
+                    </button>
+                    <button class="btn btn-primary" onclick="showRegisterModal()">
+                        <i class="fas fa-user-plus me-1"></i>
+                        ثبت نام
+                    </button>
+                </div>
+                
+                <div class="navbar-nav d-none" id="user-menu">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>
+                            <span id="user-name">کاربر</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" onclick="showProfile()">
+                                <i class="fas fa-user-circle me-2"></i>پروفایل
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" onclick="showMySubscriptions()">
+                                <i class="fas fa-crown me-2"></i>اشتراک‌های من
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()">
+                                <i class="fas fa-sign-out-alt me-2"></i>خروج
+                            </a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">سیستم املاک هوشمند</h1>
+                <p class="hero-subtitle">
+                    جستجوی پیشرفته ملک‌ها، مدیریت مشتریان و تطبیق هوشمند ملک‌ها با نیازهای شما
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn btn-hero btn-primary-hero" onclick="showProperties()">
+                        <i class="fas fa-search me-2"></i>
+                        شروع جستجو
+                    </button>
+                    <button class="btn btn-hero btn-outline-hero" onclick="showClients()">
+                        <i class="fas fa-users me-2"></i>
+                        مدیریت مشتریان
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">قابلیت‌های ویژه</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3 class="feature-title">جستجوی پیشرفته</h3>
+                        <p class="feature-description">
+                            جستجوی ملک‌ها بر اساس نوع، شهر، محله و سایر فیلترهای پیشرفته
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="feature-title">مدیریت مشتریان</h3>
+                        <p class="feature-description">
+                            تعریف مشتریان با نیازهای خاص و تطبیق هوشمند ملک‌ها
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h3 class="feature-title">اشتراک ویژه</h3>
+                        <p class="feature-description">
+                            دسترسی به لینک‌های کامل آگهی‌ها با اشتراک ویژه
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="total-properties">36</div>
+                        <div class="stat-label">ملک موجود</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="total-cities">5</div>
+                        <div class="stat-label">شهر</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="active-users">150</div>
+                        <div class="stat-label">کاربر فعال</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number" id="successful-matches">89</div>
+                        <div class="stat-label">تطبیق موفق</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
+            <div class="search-box">
+                <h3 class="search-title">جستجوی ملک</h3>
+                <form id="search-form">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <select class="form-control" id="property-type">
+                                <option value="">نوع ملک</option>
+                                <option value="sale">فروش</option>
+                                <option value="rent">اجاره</option>
+                                <option value="land">زمین</option>
+                                <option value="partnership">مشارکت</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="city-filter">
+                                <option value="">شهر</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="neighborhood-filter" placeholder="محله">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-search w-100">
+                                <i class="fas fa-search me-2"></i>
+                                جستجو
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Properties Section -->
+        <div id="properties-section" class="section-active">
+            <div class="properties-section">
+                <h2 class="section-title">ملک‌های موجود</h2>
+                
+                <!-- Loading -->
+                <div id="properties-loading" class="loading d-none">
+                    <div class="spinner"></div>
+                    <p>در حال بارگذاری ملک‌ها...</p>
+                </div>
+                
+                <!-- Properties Container -->
+                <div id="properties-container" class="row g-4">
+                    <!-- Properties will be loaded here -->
+                </div>
+                
+                <!-- Pagination -->
+                <nav id="properties-pagination">
+                    <!-- Pagination will be loaded here -->
+                </nav>
+            </div>
+        </div>
+
+        <!-- Clients Section -->
+        <div id="clients-section">
+            <div class="properties-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="section-title mb-0">مدیریت مشتریان</h2>
+                    <button class="btn btn-primary" onclick="showAddClientModal()">
+                        <i class="fas fa-plus me-2"></i>
+                        افزودن مشتری
+                    </button>
+                </div>
+                
+                <!-- Loading -->
+                <div id="clients-loading" class="loading d-none">
+                    <div class="spinner"></div>
+                    <p>در حال بارگذاری مشتریان...</p>
+                </div>
+                
+                <!-- Clients Container -->
+                <div id="clients-container" class="row g-4">
+                    <!-- Clients will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscription Section -->
+        <div id="subscription-section">
+            <div class="properties-section">
+                <h2 class="section-title">اشتراک ویژه</h2>
+                <p class="text-center text-muted mb-5">
+                    با خرید اشتراک ویژه، به لینک‌های کامل آگهی‌ها دسترسی پیدا کنید
+                </p>
+                
+                <!-- Loading -->
+                <div id="subscription-loading" class="loading d-none">
+                    <div class="spinner"></div>
+                    <p>در حال بارگذاری پلن‌ها...</p>
+                </div>
+                
+                <!-- Subscription Plans Container -->
+                <div id="subscription-plans-container" class="row g-4">
+                    <!-- Plans will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">ورود به سیستم</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="login-form">
+                        <div class="mb-3">
+                            <label class="form-label">ایمیل</label>
+                            <input type="email" class="form-control" id="login-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">رمز عبور</label>
+                            <input type="password" class="form-control" id="login-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">ورود</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">ثبت نام</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="register-form">
+                        <div class="mb-3">
+                            <label class="form-label">نام و نام خانوادگی</label>
+                            <input type="text" class="form-control" id="register-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ایمیل</label>
+                            <input type="email" class="form-control" id="register-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">شماره تماس</label>
+                            <input type="tel" class="form-control" id="register-phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">رمز عبور</label>
+                            <input type="password" class="form-control" id="register-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">ثبت نام</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div class="modal fade" id="addClientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">افزودن مشتری جدید</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-client-form">
+                        <div class="mb-3">
+                            <label class="form-label">نام مشتری</label>
+                            <input type="text" class="form-control" id="client-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">شماره تماس</label>
+                            <input type="tel" class="form-control" id="client-phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">نوع ملک مورد نظر</label>
+                            <select class="form-control" id="client-property-type" required>
+                                <option value="">انتخاب کنید</option>
+                                <option value="sale">فروش</option>
+                                <option value="rent">اجاره</option>
+                                <option value="land">زمین</option>
+                                <option value="partnership">مشارکت</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">متراژ (متر مربع)</label>
+                            <input type="text" class="form-control" id="client-area" placeholder="مثال: 100-150">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">شهر</label>
+                            <input type="text" class="form-control" id="client-city" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">بودجه (تومان)</label>
+                            <input type="number" class="form-control" id="client-budget" placeholder="مثال: 500000000">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">توضیحات</label>
+                            <textarea class="form-control" id="client-description" rows="3" placeholder="توضیحات اضافی..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">افزودن مشتری</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Main Website JS -->
+    <script src="/main.js"></script>
+</body>
+</html> 

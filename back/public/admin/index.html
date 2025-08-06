@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت - سیستم املاک</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 250px;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 4px 0;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+            transform: translateX(-5px);
+        }
+
+        .sidebar .nav-link i {
+            width: 20px;
+            margin-left: 10px;
+        }
+
+        .main-content {
+            padding: 20px;
+            margin-right: 250px;
+            min-height: 100vh;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .sidebar-toggle {
+                display: block !important;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1001;
+                background: #667eea;
+                border: none;
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .sidebar-toggle {
+                display: none !important;
+            }
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stats-card-2 {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .stats-card-3 {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .stats-card-4 {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            border: none;
+            font-weight: 600;
+        }
+
+        .btn-custom {
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .badge {
+            border-radius: 6px;
+            padding: 6px 12px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .pagination {
+            justify-content: center;
+        }
+
+        .page-link {
+            border-radius: 8px;
+            margin: 0 2px;
+            border: none;
+            color: #667eea;
+        }
+
+        .page-link:hover {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .page-item.active .page-link {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .search-box input {
+            padding-right: 45px;
+        }
+
+        .dropdown-menu {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .role-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .role-user {
+            background-color: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .role-admin {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        .role-super-admin {
+            background-color: #fce4ec;
+            color: #c2185b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Sidebar Toggle -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar -->
+    <div class="sidebar p-3">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white mb-0">
+                            <i class="fas fa-building me-2"></i>
+                            پنل مدیریت
+                        </h4>
+                        <small class="text-white-50">سیستم املاک</small>
+                    </div>
+                    
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#" onclick="showDashboard()">
+                            <i class="fas fa-tachometer-alt"></i>
+                            داشبورد
+                        </a>
+                        <a class="nav-link" href="#" onclick="showUsers()">
+                            <i class="fas fa-users"></i>
+                            مدیریت کاربران
+                        </a>
+                        <a class="nav-link" href="#" onclick="showClients()">
+                            <i class="fas fa-user-friends"></i>
+                            مدیریت مشتریان
+                        </a>
+                        <a class="nav-link" href="#" onclick="showProperties()">
+                            <i class="fas fa-home"></i>
+                            مدیریت ملک‌ها
+                        </a>
+                        <a class="nav-link" href="#" onclick="showPayments()">
+                            <i class="fas fa-credit-card"></i>
+                            مدیریت پرداخت‌ها
+                        </a>
+                        <a class="nav-link" href="#" onclick="showReports()">
+                            <i class="fas fa-chart-bar"></i>
+                            گزارشات
+                        </a>
+                        <a class="nav-link" href="/admin/crawler.html">
+                            <i class="fas fa-spider"></i>
+                            مدیریت کراولر
+                        </a>
+                        <a class="nav-link" href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            خروج
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+                    <!-- Dashboard Section -->
+                    <div id="dashboard-section">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0">
+                                <i class="fas fa-tachometer-alt me-2 text-primary"></i>
+                                داشبورد
+                            </h2>
+                            <div class="text-muted">
+                                <i class="fas fa-clock me-1"></i>
+                                <span id="current-time"></span>
+                            </div>
+                        </div>
+
+                        <!-- Stats Cards -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title mb-0">کل کاربران</h6>
+                                                <h3 class="mb-0" id="total-users">0</h3>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-users fa-2x opacity-75"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card-2">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title mb-0">کل ملک‌ها</h6>
+                                                <h3 class="mb-0" id="total-properties">0</h3>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-home fa-2x opacity-75"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title mb-0">پرداخت‌های موفق</h6>
+                                                <h3 class="mb-0" id="successful-payments">0</h3>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card-4">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title mb-0">درآمد کل</h6>
+                                                <h3 class="mb-0" id="total-revenue">0</h3>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-money-bill-wave fa-2x opacity-75"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activities -->
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-white">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-user-plus me-2 text-success"></i>
+                                            کاربران جدید
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="recent-users" class="list-group list-group-flush">
+                                            <!-- Recent users will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-white">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-credit-card me-2 text-primary"></i>
+                                            آخرین پرداخت‌ها
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="recent-payments" class="list-group list-group-flush">
+                                            <!-- Recent payments will be loaded here -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Users Section -->
+                    <div id="users-section" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0">
+                                <i class="fas fa-users me-2 text-primary"></i>
+                                مدیریت کاربران
+                            </h2>
+                            <button class="btn btn-primary btn-custom" onclick="showAddUserModal()">
+                                <i class="fas fa-plus me-1"></i>
+                                افزودن کاربر
+                            </button>
+                        </div>
+
+                        <!-- Filters -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <div class="search-box">
+                                            <input type="text" class="form-control" id="user-search" placeholder="جستجو...">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <select class="form-select" id="role-filter">
+                                            <option value="">همه نقش‌ها</option>
+                                            <option value="user">کاربر</option>
+                                            <option value="admin">ادمین</option>
+                                            <option value="super_admin">سوپر ادمین</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <select class="form-select" id="status-filter">
+                                            <option value="">همه وضعیت‌ها</option>
+                                            <option value="true">فعال</option>
+                                            <option value="false">غیرفعال</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <button class="btn btn-outline-primary btn-custom w-100" onclick="loadUsers()">
+                                            <i class="fas fa-search me-1"></i>
+                                            جستجو
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="btn-group w-100" role="group">
+                                            <button type="button" class="btn btn-outline-success" onclick="bulkAction('activate')">
+                                                <i class="fas fa-check me-1"></i>
+                                                فعال کردن
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning" onclick="bulkAction('deactivate')">
+                                                <i class="fas fa-ban me-1"></i>
+                                                غیرفعال کردن
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger" onclick="bulkAction('delete')">
+                                                <i class="fas fa-trash me-1"></i>
+                                                حذف
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Users Table -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="loading" id="users-loading">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">در حال بارگذاری...</span>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="users-table">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <input type="checkbox" id="select-all-users" onchange="toggleSelectAll()">
+                                                </th>
+                                                <th>نام</th>
+                                                <th>ایمیل</th>
+                                                <th>تلفن</th>
+                                                <th>نقش</th>
+                                                <th>وضعیت</th>
+                                                <th>تاریخ عضویت</th>
+                                                <th>عملیات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="users-tbody">
+                                            <!-- Users will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="users-pagination" class="d-flex justify-content-center mt-3">
+                                    <!-- Pagination will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clients Section -->
+                    <div id="clients-section" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0">
+                                <i class="fas fa-user-friends me-2 text-primary"></i>
+                                مدیریت مشتریان
+                            </h2>
+                            <button class="btn btn-primary btn-custom" onclick="showAddClientModal()">
+                                <i class="fas fa-plus me-1"></i>
+                                افزودن مشتری
+                            </button>
+                        </div>
+
+                        <!-- Filters -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <div class="search-box">
+                                            <input type="text" class="form-control" id="client-search" placeholder="جستجو در مشتریان...">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <select class="form-select" id="client-property-type-filter">
+                                            <option value="">همه انواع ملک</option>
+                                            <option value="sale">فروش</option>
+                                            <option value="rent">اجاره</option>
+                                            <option value="land">زمین</option>
+                                            <option value="partnership">مشارکت</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <select class="form-select" id="client-city-filter">
+                                            <option value="">همه شهرها</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <button class="btn btn-outline-primary btn-custom w-100" onclick="loadClients()">
+                                            <i class="fas fa-search me-1"></i>
+                                            جستجو
+                                        </button>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="btn-group w-100" role="group">
+                                            <button type="button" class="btn btn-outline-success" onclick="bulkClientAction('activate')">
+                                                <i class="fas fa-check me-1"></i>
+                                                فعال کردن
+                                            </button>
+                                            <button type="button" class="btn btn-outline-warning" onclick="bulkClientAction('deactivate')">
+                                                <i class="fas fa-ban me-1"></i>
+                                                غیرفعال کردن
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger" onclick="bulkClientAction('delete')">
+                                                <i class="fas fa-trash me-1"></i>
+                                                حذف
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Clients Table -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="loading" id="clients-loading">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">در حال بارگذاری...</span>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="clients-table">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <input type="checkbox" id="select-all-clients" onchange="toggleSelectAllClients()">
+                                                </th>
+                                                <th>نام</th>
+                                                <th>تلفن</th>
+                                                <th>نوع ملک</th>
+                                                <th>متراژ</th>
+                                                <th>شهر</th>
+                                                <th>بودجه</th>
+                                                <th>وضعیت</th>
+                                                <th>تاریخ ثبت</th>
+                                                <th>عملیات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="clients-tbody">
+                                            <!-- Clients will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="clients-pagination" class="d-flex justify-content-center mt-3">
+                                    <!-- Pagination will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Properties Section -->
+                    <div id="properties-section" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0">
+                                <i class="fas fa-home me-2 text-primary"></i>
+                                مدیریت ملک‌ها
+                            </h2>
+                        </div>
+
+                        <!-- Properties Filters -->
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 mb-3">
+                                        <div class="search-box">
+                                            <input type="text" class="form-control" id="property-search" placeholder="جستجو در ملک‌ها...">
+                                            <i class="fas fa-search"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <select class="form-select" id="property-type-filter">
+                                            <option value="">همه انواع</option>
+                                            <option value="sale">فروش</option>
+                                            <option value="rent">اجاره</option>
+                                            <option value="land">زمین</option>
+                                            <option value="partnership">مشارکت</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <select class="form-select" id="city-filter">
+                                            <option value="">همه شهرها</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <button class="btn btn-outline-primary btn-custom w-100" onclick="loadProperties()">
+                                            <i class="fas fa-search me-1"></i>
+                                            جستجو
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Properties Table -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="loading" id="properties-loading">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">در حال بارگذاری...</span>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="properties-table">
+                                        <thead>
+                                            <tr>
+                                                <th>تصویر</th>
+                                                <th>عنوان</th>
+                                                <th>نوع</th>
+                                                <th>شهر</th>
+                                                <th>محله</th>
+                                                <th>متراژ</th>
+                                                <th>اتاق</th>
+                                                <th>سال ساخت</th>
+                                                <th>قیمت</th>
+                                                <th>تاریخ ثبت</th>
+                                                <th>عملیات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="properties-tbody">
+                                            <!-- Properties will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="properties-pagination" class="d-flex justify-content-center mt-3">
+                                    <!-- Pagination will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payments Section -->
+                    <div id="payments-section" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0">
+                                <i class="fas fa-credit-card me-2 text-primary"></i>
+                                مدیریت پرداخت‌ها
+                            </h2>
+                        </div>
+
+                        <!-- Payment Stats -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card">
+                                    <div class="card-body text-center">
+                                        <h4 class="mb-0" id="total-payments">0</h4>
+                                        <small class="text-white-50">کل پرداخت‌ها</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card-2">
+                                    <div class="card-body text-center">
+                                        <h4 class="mb-0" id="successful-payments-count">0</h4>
+                                        <small class="text-white-50">پرداخت‌های موفق</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card-3">
+                                    <div class="card-body text-center">
+                                        <h4 class="mb-0" id="pending-payments">0</h4>
+                                        <small class="text-white-50">پرداخت‌های در انتظار</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card stats-card-4">
+                                    <div class="card-body text-center">
+                                        <h4 class="mb-0" id="total-amount">0</h4>
+                                        <small class="text-white-50">مبلغ کل (تومان)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payments Table -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="loading" id="payments-loading">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">در حال بارگذاری...</span>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover" id="payments-table">
+                                        <thead>
+                                            <tr>
+                                                <th>شناسه</th>
+                                                <th>کاربر</th>
+                                                <th>مبلغ</th>
+                                                <th>توضیحات</th>
+                                                <th>وضعیت</th>
+                                                <th>شماره پیگیری</th>
+                                                <th>تاریخ</th>
+                                                <th>عملیات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="payments-tbody">
+                                            <!-- Payments will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="payments-pagination" class="d-flex justify-content-center mt-3">
+                                    <!-- Pagination will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reports Section -->
+                    <div id="reports-section" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2 class="mb-0">
+                                <i class="fas fa-chart-bar me-2 text-primary"></i>
+                                گزارشات
+                            </h2>
+                            <div>
+                                <button class="btn btn-outline-primary btn-custom me-2" onclick="exportReport('users')">
+                                    <i class="fas fa-download me-1"></i>
+                                    گزارش کاربران
+                                </button>
+                                <button class="btn btn-outline-success btn-custom me-2" onclick="exportReport('payments')">
+                                    <i class="fas fa-download me-1"></i>
+                                    گزارش پرداخت‌ها
+                                </button>
+                                <button class="btn btn-outline-info btn-custom" onclick="exportReport('properties')">
+                                    <i class="fas fa-download me-1"></i>
+                                    گزارش ملک‌ها
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-white">
+                                        <h5 class="mb-0">آمار کاربران</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="users-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-white">
+                                        <h5 class="mb-0">آمار پرداخت‌ها</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="payments-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus me-2"></i>
+                        افزودن کاربر جدید
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="mb-3">
+                            <label class="form-label">نام کامل</label>
+                            <input type="text" class="form-control" id="user-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ایمیل</label>
+                            <input type="email" class="form-control" id="user-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">تلفن</label>
+                            <input type="text" class="form-control" id="user-phone">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">رمز عبور</label>
+                            <input type="password" class="form-control" id="user-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">نقش</label>
+                            <select class="form-select" id="user-role" required>
+                                <option value="user">کاربر</option>
+                                <option value="admin">ادمین</option>
+                                <option value="super_admin">سوپر ادمین</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="button" class="btn btn-primary" onclick="addUser()">افزودن کاربر</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal fade" id="editUserModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-edit me-2"></i>
+                        ویرایش کاربر
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <input type="hidden" id="edit-user-id">
+                        <div class="mb-3">
+                            <label class="form-label">نام کامل</label>
+                            <input type="text" class="form-control" id="edit-user-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ایمیل</label>
+                            <input type="email" class="form-control" id="edit-user-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">تلفن</label>
+                            <input type="text" class="form-control" id="edit-user-phone">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">نقش</label>
+                            <select class="form-select" id="edit-user-role" required>
+                                <option value="user">کاربر</option>
+                                <option value="admin">ادمین</option>
+                                <option value="super_admin">سوپر ادمین</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="button" class="btn btn-primary" onclick="updateUser()">ذخیره تغییرات</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-key me-2"></i>
+                        تغییر رمز عبور
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <input type="hidden" id="password-user-id">
+                        <div class="mb-3">
+                            <label class="form-label">رمز عبور جدید</label>
+                            <input type="password" class="form-control" id="new-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">تکرار رمز عبور</label>
+                            <input type="password" class="form-control" id="confirm-password" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="button" class="btn btn-primary" onclick="changePassword()">تغییر رمز</button>
+                </div>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div class="modal fade" id="addClientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus me-2"></i>
+                        افزودن مشتری جدید
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addClientForm">
+                        <div class="mb-3">
+                            <label class="form-label">نام کامل</label>
+                            <input type="text" class="form-control" id="client-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">تلفن</label>
+                            <input type="text" class="form-control" id="client-phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">نوع ملک</label>
+                            <select class="form-select" id="client-property-type" required>
+                                <option value="">انتخاب کنید</option>
+                                <option value="sale">فروش</option>
+                                <option value="rent">اجاره</option>
+                                <option value="land">زمین</option>
+                                <option value="partnership">مشارکت</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">متراژ</label>
+                            <input type="text" class="form-control" id="client-area" placeholder="مثال: 100-150" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">شهر</label>
+                            <input type="text" class="form-control" id="client-city" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">بودجه (تومان)</label>
+                            <input type="number" class="form-control" id="client-budget" placeholder="مثال: 500000000">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">توضیحات</label>
+                            <textarea class="form-control" id="client-description" rows="3" placeholder="توضیحات اضافی..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="button" class="btn btn-primary" onclick="addClient()">افزودن مشتری</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Client Modal -->
+    <div class="modal fade" id="editClientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-edit me-2"></i>
+                        ویرایش مشتری
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editClientForm">
+                        <input type="hidden" id="edit-client-id">
+                        <div class="mb-3">
+                            <label class="form-label">نام کامل</label>
+                            <input type="text" class="form-control" id="edit-client-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">تلفن</label>
+                            <input type="text" class="form-control" id="edit-client-phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">نوع ملک</label>
+                            <select class="form-select" id="edit-client-property-type" required>
+                                <option value="">انتخاب کنید</option>
+                                <option value="sale">فروش</option>
+                                <option value="rent">اجاره</option>
+                                <option value="land">زمین</option>
+                                <option value="partnership">مشارکت</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">متراژ</label>
+                            <input type="text" class="form-control" id="edit-client-area" placeholder="مثال: 100-150" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">شهر</label>
+                            <input type="text" class="form-control" id="edit-client-city" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">بودجه (تومان)</label>
+                            <input type="number" class="form-control" id="edit-client-budget" placeholder="مثال: 500000000">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">توضیحات</label>
+                            <textarea class="form-control" id="edit-client-description" rows="3" placeholder="توضیحات اضافی..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="button" class="btn btn-primary" onclick="updateClient()">ذخیره تغییرات</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Admin Panel JS -->
+    <script src="admin.js"></script>
+</body>
+</html> 
