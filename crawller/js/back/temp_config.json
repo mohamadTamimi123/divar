@@ -1,0 +1,30 @@
+{
+  "cities": [
+    {
+      "name": "tehran",
+      "displayName": "تهران",
+      "slug": "tehran"
+    },
+    {
+      "name": "karaj",
+      "displayName": "کرج",
+      "slug": "karaj"
+    }
+  ],
+  "adTypes": [
+    {
+      "name": "sale",
+      "displayName": "فروش",
+      "slug": "buy-apartment"
+    },
+    {
+      "name": "rent",
+      "displayName": "اجاره",
+      "slug": "rent-apartment"
+    }
+  ],
+  "maxAdsPerType": 5,
+  "delayBetweenPages": 3000,
+  "delayBetweenAds": 2000,
+  "headless": true
+}

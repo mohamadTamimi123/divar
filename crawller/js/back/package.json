@@ -1,0 +1,28 @@
+{
+  "name": "divar-property-crawler",
+  "version": "1.0.0",
+  "description": "کراولر هوشمند برای استخراج آگهی‌های املاک از دیوار",
+  "main": "divar_crawler.js",
+  "scripts": {
+    "start": "node divar_crawler.js",
+    "crawl": "node divar_crawler.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "crawler",
+    "divar",
+    "property",
+    "real-estate",
+    "scraping",
+    "puppeteer"
+  ],
+  "author": "Divar Crawler Team",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "puppeteer": "^24.13.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
