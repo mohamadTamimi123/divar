@@ -14,7 +14,7 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
         unique: true,
       },
       password: {
@@ -23,7 +23,8 @@ module.exports = {
       },
       phone: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
+        unique: true,
       },
       role: {
         type: Sequelize.ENUM('user', 'admin', 'super_admin'),

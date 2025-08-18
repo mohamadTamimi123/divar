@@ -175,9 +175,6 @@ temp/
 ehthumbs.db
 Thumbs.db
 
-# Crawler directory
-crawller/
-
 # Database files
 *.db
 *.sqlite
@@ -241,7 +238,6 @@ ehthumbs.db
 Thumbs.db
 
 # Project specific
-crawller/
 uploads/
 public/uploads/
 public/images/

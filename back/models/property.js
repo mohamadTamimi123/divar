@@ -42,6 +42,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.ENUM('sale', 'rent', 'land', 'partnership'),
             allowNull: false,
         },
+        adLink: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+            comment: 'لینک اصلی آگهی در دیوار یا سایر سایت‌ها'
+        },
     }, {
         tableName: 'Properties',
     });

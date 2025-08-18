@@ -6,21 +6,7 @@ async function runMigrations() {
     try {
         console.log('🔄 Starting migrations...');
 
-        // Read the migration file
-        const migrationPath = path.join(__dirname, 'migrations', '20250108000000-create-client-files.js');
-        
-        if (!fs.existsSync(migrationPath)) {
-            console.error('❌ Migration file not found:', migrationPath);
-            return;
-        }
-
-        const migration = require(migrationPath);
-
-        // Run the migration
-        console.log('📦 Running ClientFile migration...');
-        await migration.up(sequelize.getQueryInterface(), sequelize.Sequelize);
-        
-        console.log('✅ Migration completed successfully!');
+        console.log('No manual migration to run. Use sequelize-cli instead.');
         
         // Close the connection
         await sequelize.close();

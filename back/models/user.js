@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         email: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
             unique: true,
             validate: {
                 isEmail: true,
@@ -24,7 +24,11 @@ module.exports = (sequelize, DataTypes) => {
         },
         phone: {
             type: DataTypes.STRING,
-            allowNull: true,
+            allowNull: false,
+            unique: true,
+            validate: {
+                is: /^\+98\d{10}$/,
+            },
         },
         role: {
             type: DataTypes.ENUM('user', 'admin', 'super_admin'),

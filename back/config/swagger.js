@@ -41,7 +41,7 @@ const options = {
                         id: { type: 'integer', example: 1 },
                         name: { type: 'string', example: 'علی احمدی' },
                         email: { type: 'string', format: 'email', example: 'ali@example.com' },
-                        phone: { type: 'string', example: '09123456789' },
+                        phone: { type: 'string', example: '+989123456789' },
                         role: { type: 'string', enum: ['user', 'admin', 'super_admin'], example: 'user' },
                         isActive: { type: 'boolean', example: true },
                         createdAt: { type: 'string', format: 'date-time' },
@@ -116,23 +116,6 @@ const options = {
                         updatedAt: { type: 'string', format: 'date-time' }
                     }
                 },
-                Client: {
-                    type: 'object',
-                    properties: {
-                        id: { type: 'integer', example: 1 },
-                        userId: { type: 'integer', example: 1 },
-                        name: { type: 'string', example: 'احمد محمدی' },
-                        phone: { type: 'string', example: '09123456789' },
-                        propertyType: { type: 'string', enum: ['sale', 'rent', 'land', 'partnership'], example: 'sale' },
-                        area: { type: 'string', example: '100-150' },
-                        city: { type: 'string', example: 'تهران' },
-                        budget: { type: 'integer', example: 500000000 },
-                        description: { type: 'string', example: 'آپارتمان 2 خوابه در شمال تهران' },
-                        isActive: { type: 'boolean', example: true },
-                        createdAt: { type: 'string', format: 'date-time' },
-                        updatedAt: { type: 'string', format: 'date-time' }
-                    }
-                },
                 SubscriptionPlan: {
                     type: 'object',
                     properties: {
@@ -189,10 +172,7 @@ const options = {
                 name: 'Payment',
                 description: 'پرداخت و اشتراک'
             },
-            {
-                name: 'Clients',
-                description: 'مدیریت مشتریان و تطبیق ملک‌ها'
-            }
+            
         ]
     },
     apis: [

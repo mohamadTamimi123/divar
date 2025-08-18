@@ -13,7 +13,6 @@ const rentFileRouter = require('./routes/rentFile');
 const authRouter = require('./routes/auth');
 const adminRouter = require('./routes/admin');
 const paymentRouter = require('./routes/payment');
-const clientsRouter = require('./routes/clients');
 const crawlerRouter = require('./routes/crawler');
 
 app.use(cors());
@@ -37,7 +36,6 @@ app.use('/api/v1/rent-files', rentFileRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/payment', paymentRouter);
-app.use('/api/v1/clients', clientsRouter);
 app.use('/api/v1/crawler', crawlerRouter);
 
 // Static files

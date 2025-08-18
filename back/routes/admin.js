@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { User, Property, SaleDetail, RentDetail, City, Neighborhood, Client, ClientFile, sequelize } = require('../models');
+const { User, Property, SaleDetail, RentDetail, City, Neighborhood, sequelize } = require('../models');
 const { authenticateToken, requireAdmin, requireSuperAdmin } = require('../middleware/auth');
 const { Op } = require('sequelize');
 const fs = require('fs');
@@ -661,7 +661,7 @@ router.get('/neighborhoods', authenticateToken, requireAdmin, async (req, res) =
 // ==================== CLIENT MANAGEMENT ROUTES ====================
 
 // 📌 دریافت لیست مشتریان با فیلتر و صفحه‌بندی
-router.get('/clients', authenticateToken, requireAdmin, async (req, res) => {
+/* router.get('/clients', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { 
             page = 1, 
@@ -728,10 +728,10 @@ router.get('/clients', authenticateToken, requireAdmin, async (req, res) => {
         console.error('خطا در دریافت لیست مشتریان:', error);
         res.status(500).json({ error: 'خطا در دریافت لیست مشتریان', detail: error.message });
     }
-});
+}); */
 
 // 📌 دریافت اطلاعات یک مشتری خاص
-router.get('/clients/:id', authenticateToken, requireAdmin, async (req, res) => {
+/* router.get('/clients/:id', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const client = await Client.findByPk(req.params.id, {
             include: [
@@ -756,10 +756,10 @@ router.get('/clients/:id', authenticateToken, requireAdmin, async (req, res) => 
         console.error('خطا در دریافت اطلاعات مشتری:', error);
         res.status(500).json({ error: 'خطا در دریافت اطلاعات مشتری', detail: error.message });
     }
-});
+}); */
 
 // 📌 ایجاد مشتری جدید
-router.post('/clients', authenticateToken, requireAdmin, async (req, res) => {
+/* router.post('/clients', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { name, phone, propertyType, area, city, budget, description } = req.body;
 
@@ -800,10 +800,10 @@ router.post('/clients', authenticateToken, requireAdmin, async (req, res) => {
         console.error('خطا در ایجاد مشتری:', error);
         res.status(500).json({ error: 'خطا در ایجاد مشتری', detail: error.message });
     }
-});
+}); */
 
 // 📌 ویرایش مشتری
-router.put('/clients/:id', authenticateToken, requireAdmin, async (req, res) => {
+/* router.put('/clients/:id', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const { name, phone, propertyType, area, city, budget, description, isActive } = req.body;
@@ -854,10 +854,10 @@ router.put('/clients/:id', authenticateToken, requireAdmin, async (req, res) => 
         console.error('خطا در ویرایش مشتری:', error);
         res.status(500).json({ error: 'خطا در ویرایش مشتری', detail: error.message });
     }
-});
+}); */
 
 // 📌 حذف مشتری
-router.delete('/clients/:id', authenticateToken, requireAdmin, async (req, res) => {
+/* router.delete('/clients/:id', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -882,10 +882,10 @@ router.delete('/clients/:id', authenticateToken, requireAdmin, async (req, res) 
         console.error('خطا در حذف مشتری:', error);
         res.status(500).json({ error: 'خطا در حذف مشتری', detail: error.message });
     }
-});
+}); */
 
 // 📌 دریافت فایل‌های مرتبط با مشتری
-router.get('/clients/:id/files', authenticateToken, requireAdmin, async (req, res) => {
+/* router.get('/clients/:id/files', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -934,10 +934,10 @@ router.get('/clients/:id/files', authenticateToken, requireAdmin, async (req, re
         console.error('خطا در دریافت فایل‌های مشتری:', error);
         res.status(500).json({ error: 'خطا در دریافت فایل‌های مشتری', detail: error.message });
     }
-});
+}); */
 
 // 📌 افزودن فایل به مشتری
-router.post('/clients/:id/files', authenticateToken, requireAdmin, async (req, res) => {
+/* router.post('/clients/:id/files', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const { filename, filePath, fileType, title, description, matchScore, metadata } = req.body;
@@ -981,10 +981,10 @@ router.post('/clients/:id/files', authenticateToken, requireAdmin, async (req, r
         console.error('خطا در افزودن فایل به مشتری:', error);
         res.status(500).json({ error: 'خطا در افزودن فایل به مشتری', detail: error.message });
     }
-});
+}); */
 
 // 📌 علامت‌گذاری فایل به عنوان خوانده شده
-router.patch('/clients/:clientId/files/:fileId/read', authenticateToken, requireAdmin, async (req, res) => {
+/* router.patch('/clients/:clientId/files/:fileId/read', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { clientId, fileId } = req.params;
 
@@ -1014,10 +1014,10 @@ router.patch('/clients/:clientId/files/:fileId/read', authenticateToken, require
         console.error('خطا در علامت‌گذاری فایل:', error);
         res.status(500).json({ error: 'خطا در علامت‌گذاری فایل', detail: error.message });
     }
-});
+}); */
 
 // 📌 حذف فایل از مشتری
-router.delete('/clients/:clientId/files/:fileId', authenticateToken, requireAdmin, async (req, res) => {
+/* router.delete('/clients/:clientId/files/:fileId', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { clientId, fileId } = req.params;
 
@@ -1043,10 +1043,10 @@ router.delete('/clients/:clientId/files/:fileId', authenticateToken, requireAdmi
         console.error('خطا در حذف فایل:', error);
         res.status(500).json({ error: 'خطا در حذف فایل', detail: error.message });
     }
-});
+}); */
 
 // 📌 دریافت آمار فایل‌های جدید برای مشتری
-router.get('/clients/:id/files/stats', authenticateToken, requireAdmin, async (req, res) => {
+/* router.get('/clients/:id/files/stats', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -1113,10 +1113,10 @@ router.get('/clients/:id/files/stats', authenticateToken, requireAdmin, async (r
         console.error('خطا در دریافت آمار فایل‌ها:', error);
         res.status(500).json({ error: 'خطا در دریافت آمار فایل‌ها', detail: error.message });
     }
-});
+}); */
 
 // 📌 یافتن تطبیق‌های ملک برای مشتری
-router.get('/clients/:id/matches', authenticateToken, requireAdmin, async (req, res) => {
+/* router.get('/clients/:id/matches', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -1187,10 +1187,10 @@ router.get('/clients/:id/matches', authenticateToken, requireAdmin, async (req, 
         console.error('خطا در یافتن تطبیق‌ها:', error);
         res.status(500).json({ error: 'خطا در یافتن تطبیق‌ها', detail: error.message });
     }
-});
+}); */
 
 // 📌 عملیات گروهی روی مشتریان
-router.post('/clients/bulk', authenticateToken, requireAdmin, async (req, res) => {
+/* router.post('/clients/bulk', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { action, clientIds } = req.body;
 
@@ -1231,7 +1231,7 @@ router.post('/clients/bulk', authenticateToken, requireAdmin, async (req, res) =
         console.error('خطا در انجام عملیات گروهی:', error);
         res.status(500).json({ error: 'خطا در انجام عملیات گروهی', detail: error.message });
     }
-});
+}); */
 
 // تابع کمکی برای تجزیه محدوده متراژ
 function parseAreaRange(areaString) {

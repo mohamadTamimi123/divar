@@ -250,4 +250,104 @@ router.get('/neighborhoods', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /files/{id}:
+ *   get:
+ *     summary: دریافت جزئیات ملک بر اساس ID
+ *     tags: [Properties]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: شناسه ملک
+ *     responses:
+ *       200:
+ *         description: جزئیات ملک با موفقیت دریافت شد
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "جزئیات ملک با موفقیت دریافت شد"
+ *                 property:
+ *                   $ref: '#/components/schemas/Property'
+ *       404:
+ *         description: ملک یافت نشد
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: خطای سرور
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const property = await Property.findByPk(id, {
+            include: [
+                {
+                    model: SaleDetail,
+                    as: 'saleDetail',
+                    required: false
+                },
+                {
+                    model: RentDetail,
+                    as: 'rentDetail',
+                    required: false
+                },
+                {
+                    model: City,
+                    as: 'city',
+                    required: false,
+                    attributes: ['name']
+                },
+                {
+                    model: Neighborhood,
+                    as: 'neighborhood',
+                    required: false,
+                    attributes: ['name']
+                }
+            ]
+        });
+
+        if (!property) {
+            return res.status(404).json({ 
+                error: 'ملک یافت نشد',
+                message: 'ملک با شناسه مشخص شده یافت نشد'
+            });
+        }
+
+        // Transform the data to include city and neighborhood names directly
+        const propertyData = property.toJSON();
+        if (propertyData.city) {
+            propertyData.city = propertyData.city.name;
+        }
+        if (propertyData.neighborhood) {
+            propertyData.neighborhood = propertyData.neighborhood.name;
+        }
+
+        res.json({
+            message: 'جزئیات ملک با موفقیت دریافت شد',
+            property: propertyData
+        });
+
+    } catch (error) {
+        console.error('خطا در دریافت جزئیات ملک:', error);
+        res.status(500).json({ 
+            error: 'خطا در دریافت جزئیات ملک', 
+            detail: error.message 
+        });
+    }
+});
+
 module.exports = router;

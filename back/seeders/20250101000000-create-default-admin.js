@@ -19,7 +19,7 @@ module.exports = {
           name: 'مدیر سیستم',
           email: 'admin@divar.com',
           password: hashedPassword,
-          phone: '09123456789',
+          phone: '+989123456789',
           role: 'super_admin',
           isActive: true,
           createdAt: new Date(),

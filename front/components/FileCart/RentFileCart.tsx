@@ -5,30 +5,52 @@ import { useState } from "react";
 import { isLoggedIn, hasActiveSubscription, redirectToLogin } from "../../utils/authUtils";
 
 export default function RentFileCart(props:any) {
+    // props should include: id, title, image, metraj, city, neighborhood, location, 
+    // rentDetail, deposit, rent, vadie, ejare, adLink
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
-    const handleMoreClick = async () => {
-        // Check if user is logged in
+    const handleViewAdClick = () => {
+        // Allow direct navigation to property details without login
+        window.location.href = `/property/${props.id}`;
+    };
+
+    const handleCardClick = () => {
+        // Allow direct navigation to property details without login
+        window.location.href = `/property/${props.id}`;
+    };
+
+    const handleAdLinkClick = () => {
+        // Check if user is logged in for advertisement link access
         if (!isLoggedIn()) {
             setShowAuthModal(true);
             return;
         }
 
         // Check if user has subscription
-        const hasSubscription = await hasActiveSubscription();
-        if (!hasSubscription) {
-            setShowSubscriptionModal(true);
-            return;
-        }
+        hasActiveSubscription().then(hasSubscription => {
+            if (!hasSubscription) {
+                setShowSubscriptionModal(true);
+                return;
+            }
 
-        // Redirect to detail page
-        window.location.href = `/buy/${props.id}`;
+            // If user is logged in and has subscription, redirect to original ad
+            if (props.adLink) {
+                window.open(props.adLink, '_blank');
+            } else {
+                // Fallback to divar search if no direct link
+                const searchQuery = encodeURIComponent(props.title);
+                window.open(`https://divar.ir/s/tehran?q=${searchQuery}`, '_blank');
+            }
+        });
     };
 
     return (
         <>
-            <div className="file-cart--main bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group">
+            <div 
+                className="file-cart--main bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group cursor-pointer" 
+                onClick={handleCardClick}
+            >
                 {/* Image Section */}
                 {props.image ? (
                     <div className="relative w-full h-[200px] bg-gray-50 overflow-hidden">
@@ -59,12 +81,12 @@ export default function RentFileCart(props:any) {
                 <div className="flex flex-col flex-1 justify-between p-6">
                     <div className="space-y-3">
                         {/* Title */}
-                        <h2 className="font-semibold text-lg text-gray-900 line-clamp-2 leading-tight" title={props.title}>
+                        <h2 className="font-semibold h-14 text-lg text-gray-900 line-clamp-2 leading-tight" title={props.title}>
                             {props.title}
                         </h2>
                         
                         {/* Location and Neighborhood */}
-                        <div className="space-y-2">
+                        <div className="space-y-2 flex flex-row justify-between">
                             {/* Neighborhood */}
                             {props.neighborhood && (
                                 <div className="flex items-center gap-2 text-blue-600">
@@ -157,13 +179,28 @@ export default function RentFileCart(props:any) {
                     {/* Footer with More Button */}
                     <div className="mt-4 pt-3 border-t border-gray-100">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500 font-medium">زیر قیمت بازار</span>
-                            <button 
-                                onClick={handleMoreClick}
-                                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
-                            >
-                                بیشتر
-                            </button>
+                            {/* <span className="text-xs text-gray-500 font-medium">زیر قیمت بازار</span>
+                             */}
+                            <div className="flex gap-2 flex-row justify-between w-full">
+                                <button 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleViewAdClick();
+                                    }}
+                                    className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+                                >
+                                    مشاهده آگهی
+                                </button>
+                                <button 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleAdLinkClick();
+                                    }}
+                                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+                                >
+                                    مشاهده لینک آگهی
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -175,7 +212,7 @@ export default function RentFileCart(props:any) {
                     <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
                         <h3 className="text-lg font-semibold mb-4">ورود به سیستم</h3>
                         <p className="text-gray-600 mb-4">
-                            برای مشاهده جزئیات کامل آگهی، لطفاً وارد شوید یا ثبت‌نام کنید.
+                            برای مشاهده لینک اصلی آگهی، لطفاً وارد شوید یا ثبت‌نام کنید.
                         </p>
                         <div className="flex gap-2">
                             <button 
@@ -204,7 +241,7 @@ export default function RentFileCart(props:any) {
                     <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
                         <h3 className="text-lg font-semibold mb-4">اشتراک ویژه</h3>
                         <p className="text-gray-600 mb-4">
-                            برای مشاهده جزئیات کامل آگهی، نیاز به اشتراک ویژه دارید.
+                            برای مشاهده لینک اصلی آگهی، نیاز به اشتراک ویژه دارید.
                         </p>
                         <div className="flex gap-2">
                             <button 

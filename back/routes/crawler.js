@@ -3,7 +3,7 @@ const router = express.Router();
 const fs = require('fs');
 const path = require('path');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
-const ClientFileService = require('../service/clientFileService');
+// Clients feature removed
 
 // 📊 دریافت آمار کلی کراولر
 router.get('/stats', authenticateToken, requireAdmin, async (req, res) => {
@@ -569,31 +569,7 @@ router.post('/import', authenticateToken, requireAdmin, async (req, res) => {
                 }
             }
 
-            // 🔗 Associate file with matching clients
-            console.log('🔗 Associating file with clients...');
-            try {
-                const metadata = {
-                    title: `فایل کراول شده - ${filename}`,
-                    description: `فایل حاوی ${totalImported} ملک کراول شده`,
-                    propertyType: filename.includes('sale') ? 'sale' : filename.includes('rent') ? 'rent' : 'property',
-                    city: filename.includes('tehran') ? 'تهران' : filename.includes('karaj') ? 'کرج' : null,
-                    totalProperties: totalImported,
-                    fileType: 'crawled'
-                };
-
-                const associations = await ClientFileService.associateFileWithClients(
-                    filePath,
-                    filename,
-                    'crawled',
-                    metadata
-                );
-
-                clientAssociations = associations;
-                console.log(`✅ Associated file with ${associations} clients`);
-
-            } catch (error) {
-                console.error('❌ Error associating file with clients:', error);
-            }
+            // Clients association removed
 
         } else {
             return res.status(400).json({ error: 'Invalid data format' });
