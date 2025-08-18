@@ -17,6 +17,8 @@ export default function MainMenu() {
     const [showNeighborhoodDropdown, setShowNeighborhoodDropdown] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userPhone, setUserPhone] = useState<string | null>(null);
+    const [activeSub, setActiveSub] = useState<any>(null);
     
     // Search states
     const [citySearchTerm, setCitySearchTerm] = useState("");
@@ -33,6 +35,48 @@ export default function MainMenu() {
             : null;
         setIsLoggedIn(!!token);
     }, []);
+
+    // When logged in, fetch user phone and active subscription
+    useEffect(() => {
+        const fetchUserAndSubscription = async () => {
+            try {
+                const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null;
+                if (!token) return;
+                const apiPath = process.env.NEXT_PUBLIC_API_PATH || 'http://localhost:5001';
+
+                // Fetch user info
+                const meRes = await fetch(`${apiPath}/api/v1/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (meRes.ok) {
+                    const meData = await meRes.json();
+                    setUserPhone(meData.user?.phone || null);
+                }
+
+                // Fetch subscription status
+                const subRes = await fetch(`${apiPath}/api/v1/auth/subscription-status`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (subRes.ok) {
+                    const subData = await subRes.json();
+                    if (subData.hasActiveSubscription) {
+                        setActiveSub(subData.subscriptionDetails);
+                    } else {
+                        setActiveSub(null);
+                    }
+                }
+            } catch (e) {
+                setActiveSub(null);
+            }
+        };
+
+        if (isLoggedIn) {
+            fetchUserAndSubscription();
+        } else {
+            setUserPhone(null);
+            setActiveSub(null);
+        }
+    }, [isLoggedIn]);
 
     const handleLogout = () => {
         if (typeof window !== 'undefined') {
@@ -337,14 +381,26 @@ export default function MainMenu() {
             </div>
             
             {/* User Section */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
                 {isLoggedIn ? (
-                    <button onClick={handleLogout} className="login-btn flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 border border-gray-300/50 hover:border-gray-400/50 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl text-gray-800 transform hover:scale-105">
-                        <div className="flex items-center justify-center w-6 h-6">
-                            <FaUser size={14} className="text-gray-800" />
+                    <>
+                        <div className="hidden sm:flex flex-col items-end">
+                            {userPhone && (
+                                <div className="text-sm font-semibold text-gray-800">{userPhone}</div>
+                            )}
+                            {activeSub && (
+                                <div className="mt-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-lg">
+                                    اشتراک فعال: {activeSub.planName || 'اشتراک'} {activeSub.period === 'yearly' ? 'سالانه' : 'ماهانه'}
+                                </div>
+                            )}
                         </div>
-                        <span className="text-sm font-semibold">خروج</span>
-                    </button>
+                        <button onClick={handleLogout} className="login-btn flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 border border-gray-300/50 hover:border-gray-400/50 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl text-gray-800 transform hover:scale-105">
+                            <div className="flex items-center justify-center w-6 h-6">
+                                <FaUser size={14} className="text-gray-800" />
+                            </div>
+                            <span className="text-sm font-semibold">خروج</span>
+                        </button>
+                    </>
                 ) : (
                     <a href="/login" className="login-btn flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
                         <div className="flex items-center justify-center w-6 h-6">
