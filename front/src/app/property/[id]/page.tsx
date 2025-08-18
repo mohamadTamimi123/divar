@@ -109,7 +109,11 @@ export default function PropertyDetailPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-                <MainMenu/>
+                {/* Header with MainMenu */}
+                <div className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm sticky top-0 z-50">
+                    <MainMenu/>
+                </div>
+                
                 <div className="flex min-h-[calc(100vh-80px)]">
                     {/* Main Content */}
                     <div className="flex-1 px-8 pr-96">
@@ -130,7 +134,11 @@ export default function PropertyDetailPage() {
     if (error || !property) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-                <MainMenu/>
+                {/* Header with MainMenu */}
+                <div className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm sticky top-0 z-50">
+                    <MainMenu/>
+                </div>
+                
                 <div className="flex min-h-[calc(100vh-80px)]">
                     {/* Main Content */}
                     <div className="flex-1 px-8 pr-96">
@@ -151,7 +159,11 @@ export default function PropertyDetailPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-            <MainMenu/>
+            {/* Header with MainMenu */}
+            <div className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm sticky top-0 z-50">
+                <MainMenu/>
+            </div>
+            
             <div className="flex min-h-[calc(100vh-80px)]">
                 {/* Main Content */}
                 <div className="flex-1 px-8 pr-96">

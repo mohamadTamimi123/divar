@@ -6,6 +6,7 @@ import { FaUser } from "react-icons/fa";
 import { useState, useEffect, useRef } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
+import { IoSearch } from "react-icons/io5";
 import { useFilters } from "../../src/context/FiltersContext";
 
 export default function MainMenu() {
@@ -17,10 +18,14 @@ export default function MainMenu() {
     const [loading, setLoading] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     
+    // Search states
+    const [citySearchTerm, setCitySearchTerm] = useState("");
+    const [neighborhoodSearchTerm, setNeighborhoodSearchTerm] = useState("");
+    
     const cityDropdownRef = useRef<HTMLDivElement>(null);
     const neighborhoodDropdownRef = useRef<HTMLDivElement>(null);
 
-    // Fetch cities on component mount
+    // Load saved selections from localStorage on component mount
     useEffect(() => {
         fetchCities();
         const token = typeof window !== 'undefined' 
@@ -28,6 +33,7 @@ export default function MainMenu() {
             : null;
         setIsLoggedIn(!!token);
     }, []);
+
     const handleLogout = () => {
         if (typeof window !== 'undefined') {
             localStorage.removeItem('userToken');
@@ -52,9 +58,11 @@ export default function MainMenu() {
         const handleClickOutside = (event: MouseEvent) => {
             if (cityDropdownRef.current && !cityDropdownRef.current.contains(event.target as Node)) {
                 setShowCityDropdown(false);
+                setCitySearchTerm("");
             }
             if (neighborhoodDropdownRef.current && !neighborhoodDropdownRef.current.contains(event.target as Node)) {
                 setShowNeighborhoodDropdown(false);
+                setNeighborhoodSearchTerm("");
             }
         };
 
@@ -97,23 +105,34 @@ export default function MainMenu() {
         setSelectedCity(city);
         setSelectedNeighborhoods([]);
         setShowCityDropdown(false);
+        setCitySearchTerm("");
     };
 
     const handleNeighborhoodToggle = (neighborhood: string) => {
-        if (selectedNeighborhoods.includes(neighborhood)) {
-            setSelectedNeighborhoods(selectedNeighborhoods.filter(n => n !== neighborhood));
-        } else {
-            setSelectedNeighborhoods([...selectedNeighborhoods, neighborhood]);
-        }
-    };
-
-    const removeNeighborhood = (neighborhood: string) => {
-        setSelectedNeighborhoods(selectedNeighborhoods.filter(n => n !== neighborhood));
+        const newNeighborhoods = selectedNeighborhoods.includes(neighborhood)
+            ? selectedNeighborhoods.filter(n => n !== neighborhood)
+            : [...selectedNeighborhoods, neighborhood];
+        
+        setSelectedNeighborhoods(newNeighborhoods);
     };
 
     const clearAllNeighborhoods = () => {
         setSelectedNeighborhoods([]);
     };
+
+    const removeNeighborhood = (neighborhood: string) => {
+        const newNeighborhoods = selectedNeighborhoods.filter(n => n !== neighborhood);
+        setSelectedNeighborhoods(newNeighborhoods);
+    };
+
+    // Filter cities and neighborhoods based on search terms
+    const filteredCities = cities.filter(city => 
+        city.toLowerCase().includes(citySearchTerm.toLowerCase())
+    );
+    
+    const filteredNeighborhoods = neighborhoods.filter(neighborhood => 
+        neighborhood.toLowerCase().includes(neighborhoodSearchTerm.toLowerCase())
+    );
 
     return (
         <div className="flex justify-between items-center px-8 py-6">
@@ -161,22 +180,48 @@ export default function MainMenu() {
                     
                     {/* City Dropdown */}
                     {showCityDropdown && (
-                        <div className="absolute top-full left-0 right-0 mt-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/50 max-h-60 overflow-y-auto z-50">
-                            {cities.length > 0 ? (
-                                cities.map((city) => (
-                                    <button
-                                        key={city}
-                                        onClick={() => handleCitySelect(city)}
-                                        className="w-full px-5 py-3 text-right hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 first:rounded-t-2xl last:rounded-b-2xl border-b border-gray-100/50 last:border-b-0"
-                                    >
-                                        <span className="text-sm font-medium text-gray-900">{city}</span>
-                                    </button>
-                                ))
-                            ) : (
-                                <div className="p-4 text-center text-gray-500">
-                                    <span className="text-sm">شهری یافت نشد</span>
+                        <div className="absolute top-full left-0 right-0 mt-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/50 max-h-60 overflow-y-auto z-50 min-w-[320px]">
+                            {/* Search Input */}
+                            <div className="p-5 border-b border-gray-200/50">
+                                <div className="relative">
+                                    <IoSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                                    <input
+                                        type="text"
+                                        placeholder="جستجو در شهرها..."
+                                        value={citySearchTerm}
+                                        onChange={(e) => setCitySearchTerm(e.target.value)}
+                                        className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right"
+                                    />
                                 </div>
-                            )}
+                            </div>
+                            
+                            <div className="max-h-40 overflow-y-auto">
+                                {filteredCities.length > 0 ? (
+                                    filteredCities.map((city) => (
+                                        <button
+                                            key={city}
+                                            onClick={() => handleCitySelect(city)}
+                                            className="w-full px-5 py-3 text-right hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-200 flex items-center justify-between border-b border-gray-100/50 last:border-b-0"
+                                        >
+                                            <span className="text-sm font-medium text-gray-900">{city}</span>
+                                            {selectedCity === city && (
+                                                <div className="w-5 h-5 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-md">
+                                                    <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
+                                                </div>
+                                            )}
+                                        </button>
+                                    ))
+                                ) : citySearchTerm ? (
+                                    <div className="p-4 text-center text-gray-500">
+                                        <span className="text-sm">شهری یافت نشد</span>
+                                    </div>
+                                ) : (
+                                    <div className="p-4 text-center text-gray-500">
+                                        <div className="w-6 h-6 border-2 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto"></div>
+                                        <span className="text-sm mt-2 block">در حال بارگذاری...</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -207,7 +252,7 @@ export default function MainMenu() {
                         
                         {/* Neighborhood Dropdown */}
                         {showNeighborhoodDropdown && (
-                            <div className="absolute top-full left-0 right-0 mt-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/50 max-h-60 overflow-y-auto z-50 min-w-[320px]">
+                            <div className="absolute top-full left-0 right-0 mt-3 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/50 max-h-80  z-50 min-w-[320px]">
                                 <div className="p-5 border-b border-gray-200/50">
                                     <div className="flex items-center justify-between mb-3">
                                         <span className="text-sm font-semibold text-gray-900">انتخاب محله‌ها</span>
@@ -220,6 +265,19 @@ export default function MainMenu() {
                                             </button>
                                         )}
                                     </div>
+                                    
+                                    {/* Search Input */}
+                                    <div className="relative mb-3">
+                                        <IoSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                                        <input
+                                            type="text"
+                                            placeholder="جستجو در محله‌ها..."
+                                            value={neighborhoodSearchTerm}
+                                            onChange={(e) => setNeighborhoodSearchTerm(e.target.value)}
+                                            className="w-full pr-10 pl-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-right"
+                                        />
+                                    </div>
+                                    
                                     {selectedNeighborhoods.length > 0 && (
                                         <div className="flex flex-wrap gap-2">
                                             {selectedNeighborhoods.map((neighborhood) => (
@@ -245,8 +303,8 @@ export default function MainMenu() {
                                             <div className="w-6 h-6 border-2 border-purple-200 border-t-purple-500 rounded-full animate-spin mx-auto"></div>
                                             <span className="text-sm mt-2 block">در حال بارگذاری...</span>
                                         </div>
-                                    ) : neighborhoods.length > 0 ? (
-                                        neighborhoods.map((neighborhood) => (
+                                    ) : filteredNeighborhoods.length > 0 ? (
+                                        filteredNeighborhoods.map((neighborhood) => (
                                             <button
                                                 key={neighborhood}
                                                 onClick={() => handleNeighborhoodToggle(neighborhood)}
@@ -262,6 +320,10 @@ export default function MainMenu() {
                                                 )}
                                             </button>
                                         ))
+                                    ) : neighborhoodSearchTerm ? (
+                                        <div className="p-4 text-center text-gray-500">
+                                            <span className="text-sm">محله‌ای یافت نشد</span>
+                                        </div>
                                     ) : (
                                         <div className="p-4 text-center text-gray-500">
                                             <span className="text-sm">محله‌ای یافت نشد</span>

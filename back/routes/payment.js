@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const zarinpal = require('zarinpal-checkout');
+const ZarinpalCheckout = require('zarinpal-checkout');
 const { Payment, User } = require('../models');
 const { authenticateToken } = require('../middleware/auth');
 const paymentConfig = require('../config/payment');
 
-// تنظیمات زرین‌پال
-const zarinpalConfig = {
-    merchant: paymentConfig.zarinpal.merchantId,
-    sandbox: paymentConfig.zarinpal.sandbox,
-};
+// تنظیمات و ایجاد نمونه زرین‌پال (Sandbox در توسعه فعال است)
+const zarinpal = ZarinpalCheckout.create(
+    paymentConfig.zarinpal.merchantId,
+    paymentConfig.zarinpal.sandbox
+);
 
 /**
  * @swagger
@@ -336,16 +336,25 @@ router.get('/verify', async (req, res) => {
             // اینجا می‌توانید اشتراک کاربر را فعال کنید
             // await activateUserSubscription(payment.userId, payment.metadata);
 
-            res.json({
-                message: 'پرداخت با موفقیت انجام شد',
-                refId: verification.RefID,
-                payment: {
-                    id: payment.id,
-                    amount: payment.amount,
-                    status: payment.status,
-                    refId: payment.refId
-                }
-            });
+            // Redirect user to frontend result page
+            try {
+                const baseReturnUrl = payment.returnUrl || paymentConfig.zarinpal.returnUrl;
+                const separator = baseReturnUrl.includes('?') ? '&' : '?';
+                const redirectUrl = `${baseReturnUrl}${separator}status=success&paymentId=${encodeURIComponent(payment.id)}&refId=${encodeURIComponent(verification.RefID)}`;
+                return res.redirect(302, redirectUrl);
+            } catch (e) {
+                // Fallback to JSON if redirect fails
+                return res.json({
+                    message: 'پرداخت با موفقیت انجام شد',
+                    refId: verification.RefID,
+                    payment: {
+                        id: payment.id,
+                        amount: payment.amount,
+                        status: payment.status,
+                        refId: payment.refId
+                    }
+                });
+            }
         } else {
             // پرداخت ناموفق
             await payment.update({
@@ -353,10 +362,18 @@ router.get('/verify', async (req, res) => {
                 gatewayResponse: verification
             });
 
-            res.status(400).json({
-                error: 'پرداخت ناموفق بود',
-                status: verification.Status
-            });
+            // Redirect user to frontend with failed status
+            try {
+                const baseReturnUrl = payment.returnUrl || paymentConfig.zarinpal.returnUrl;
+                const separator = baseReturnUrl.includes('?') ? '&' : '?';
+                const redirectUrl = `${baseReturnUrl}${separator}status=failed&paymentId=${encodeURIComponent(payment.id)}&authority=${encodeURIComponent(Authority || '')}`;
+                return res.redirect(302, redirectUrl);
+            } catch (e) {
+                return res.status(400).json({
+                    error: 'پرداخت ناموفق بود',
+                    status: verification.Status
+                });
+            }
         }
 
     } catch (error) {

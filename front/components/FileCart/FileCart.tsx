@@ -78,12 +78,12 @@ export default function FileCart(props:any) {
                 <div className="flex flex-col flex-1 justify-between p-6">
                     <div className="space-y-3">
                         {/* Title */}
-                        <h2 className="font-semibold text-lg text-gray-900 line-clamp-2 leading-tight" title={props.title}>
+                        <h2 className="font-semibold h-14 text-lg text-gray-900 line-clamp-2 leading-tight" title={props.title}>
                             {props.title}
                         </h2>
                         
                         {/* Location and Neighborhood */}
-                        <div className="space-y-2">
+                        <div className="space-y-2 flex flex-row justify-between">
                             {/* Neighborhood */}
                             {props.neighborhood && (
                                 <div className="flex items-center gap-2 text-blue-600">
