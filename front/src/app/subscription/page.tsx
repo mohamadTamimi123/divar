@@ -25,9 +25,11 @@ export default function SubscriptionPage() {
     const [checkingDiscount, setCheckingDiscount] = useState<boolean>(false);
     const [discountResult, setDiscountResult] = useState<any>(null);
     const [creatingPayment, setCreatingPayment] = useState<boolean>(false);
+    const [activeSub, setActiveSub] = useState<any>(null);
 
     useEffect(() => {
         fetchPlans();
+        fetchActiveSubscription();
     }, []);
 
     const apiPath = process.env.NEXT_PUBLIC_API_PATH || 'http://localhost:5001';
@@ -47,6 +49,25 @@ export default function SubscriptionPage() {
             setError(e.message || "خطا در دریافت پلن‌ها");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchActiveSubscription = async () => {
+        try {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('userToken') : null;
+            if (!token) return;
+            const res = await fetch(`${apiPath}/api/v1/auth/subscription-status`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+            if (data.hasActiveSubscription && data.subscriptionDetails) {
+                setActiveSub(data.subscriptionDetails);
+            } else {
+                setActiveSub(null);
+            }
+        } catch (e) {
+            setActiveSub(null);
         }
     };
 
@@ -110,6 +131,24 @@ export default function SubscriptionPage() {
                 <div className="flex-1 px-8 pr-96">
                     <div className="max-w-4xl mx-auto py-8">
                         <h1 className="text-2xl font-bold mb-6">خرید اشتراک</h1>
+
+                        {activeSub && (
+                            <div className="mb-8 bg-white p-5 rounded-2xl border border-green-200">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <div className="font-bold text-green-700">اشتراک فعال</div>
+                                        <div className="text-sm text-gray-600 mt-1">
+                                            {activeSub.planName ? `${activeSub.planName} - ${activeSub.period === 'yearly' ? 'سالانه' : 'ماهانه'}` : activeSub.description}
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-1">مانده: {activeSub.daysRemaining} روز</div>
+                                    </div>
+                                    <div className="text-left">
+                                        <div className="font-semibold text-gray-800">{new Intl.NumberFormat('fa-IR').format(activeSub.amount)} {currency}</div>
+                                        <div className="text-xs text-gray-500">شناسه پرداخت: {activeSub.paymentId}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {loading ? (
                             <div className="text-gray-500">در حال بارگذاری پلن‌ها...</div>

@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 const { User, Payment } = require('../models');
+const paymentConfig = require('../config/payment');
 const { authenticateToken } = require('../middleware/auth');
 
 // JWT Secret Key
@@ -78,6 +79,12 @@ router.get('/subscription-status', authenticateToken, async (req, res) => {
 
         const isActive = daysSincePayment < subscriptionDuration;
 
+        // Extract metadata if exists
+        const meta = activePayment.metadata || {};
+        const planId = meta.planId || null;
+        const period = meta.period || (subscriptionDuration === 365 ? 'yearly' : 'monthly');
+        const plan = planId ? paymentConfig.subscriptionPlans[planId] : null;
+
         res.json({
             hasActiveSubscription: isActive,
             subscriptionDetails: isActive ? {
@@ -86,7 +93,10 @@ router.get('/subscription-status', authenticateToken, async (req, res) => {
                 description: activePayment.description,
                 createdAt: activePayment.createdAt,
                 expiresAt: new Date(paymentDate.getTime() + (subscriptionDuration * 24 * 60 * 60 * 1000)),
-                daysRemaining: subscriptionDuration - daysSincePayment
+                daysRemaining: subscriptionDuration - daysSincePayment,
+                planId: planId,
+                planName: plan ? plan.name : null,
+                period: period
             } : null
         });
 

@@ -210,27 +210,31 @@ router.post('/create', authenticateToken, async (req, res) => {
             Amount: priceDetails.totalPrice,
             CallbackURL: `${paymentConfig.zarinpal.callbackUrl}?paymentId=${payment.id}`,
             Description: payment.description,
-            Email: req.user.email,
-            Mobile: req.user.phone,
+            Email: req.user?.email,
+            Mobile: req.user?.phone,
         });
 
-        if (paymentRequest.Status === 100) {
+        // zarinpal-checkout returns lowercase fields and includes a full redirect URL
+        if (paymentRequest.status === 100) {
             // بروزرسانی authority در دیتابیس
             await payment.update({
-                authority: paymentRequest.Authority,
+                authority: paymentRequest.authority || paymentRequest.Authority,
                 gatewayResponse: paymentRequest
             });
+
+            // Use URL from SDK or build manually as fallback
+            const paymentUrl = paymentRequest.url || `${paymentConfig.zarinpal.sandbox ? 'https://sandbox.zarinpal.com' : 'https://www.zarinpal.com'}/pg/StartPay/${(paymentRequest.authority || paymentRequest.Authority)}`;
 
             res.json({
                 message: 'درخواست پرداخت با موفقیت ایجاد شد',
                 paymentId: payment.id,
-                authority: paymentRequest.Authority,
-                paymentUrl: `https://www.zarinpal.com/pg/StartPay/${paymentRequest.Authority}`,
+                authority: paymentRequest.authority,
+                paymentUrl,
                 priceDetails
             });
         } else {
             await payment.update({ status: 'failed' });
-            throw new Error('خطا در ایجاد درخواست پرداخت');
+            throw new Error(paymentRequest.errors?.message || 'خطا در ایجاد درخواست پرداخت');
         }
 
     } catch (error) {
@@ -325,7 +329,7 @@ router.get('/verify', async (req, res) => {
             Authority: Authority,
         });
 
-        if (verification.Status === 100) {
+        if (verification.status === 100) {
             // پرداخت موفق
             await payment.update({
                 status: 'success',
