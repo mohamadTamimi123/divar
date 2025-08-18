@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from "react";
-import { FaHome, FaFileAlt, FaSignOutAlt, FaChevronDown, FaChevronRight } from "react-icons/fa";
+import { FaHome, FaFileAlt, FaSignOutAlt, FaChevronDown, FaChevronRight, FaUsers } from "react-icons/fa";
 
 export default function SideBar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -77,6 +77,19 @@ export default function SideBar() {
                             </div>
                         )}
                     </div>
+
+                    {/* My Customers */}
+                    <a 
+                        href="/my-customers" 
+                        className="flex items-center justify-between w-full text-gray-700 hover:text-teal-600 hover:bg-gradient-to-r hover:from-teal-50 hover:to-emerald-50 rounded-2xl px-6 py-4 transition-all duration-300 group border border-transparent hover:border-teal-200 hover:shadow-md"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-xl group-hover:scale-110 transition-all duration-300 shadow-lg">
+                                <FaUsers size={18} className="text-white" />
+                            </div>
+                            <span className="font-semibold text-lg">مشتری‌های من</span>
+                        </div>
+                    </a>
                 </nav>
 
                 {/* Logout Button */}
