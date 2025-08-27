@@ -18,7 +18,10 @@ const CONFIG = {
     delayBetweenAds: 2000,
     headless: false,
     incognito: true,
-    executablePath: '/usr/bin/google-chrome'
+    executablePath: '/usr/bin/google-chrome',
+    // When true, only listing pages are opened. We auto-scroll and count found ads without opening each ad page
+    listingOnly: true,
+    scrollTimeoutMs: 90000
 };
 
 class DivarCrawler {
@@ -78,7 +81,7 @@ class DivarCrawler {
         }
     }
 
-    async autoScrollUntilButton(page, timeout = 60000, scrollDelay = 1000) {
+    async autoScrollUntilButton(page, timeout = CONFIG.scrollTimeoutMs, scrollDelay = 1000) {
         let allPostsMap = new Map();
         const distance = 500;
         const startTime = Date.now();
@@ -101,10 +104,12 @@ class DivarCrawler {
                 if (post.link) allPostsMap.set(post.link, post);
             }
 
-            // Check if we have enough posts
-            if (allPostsMap.size >= CONFIG.maxAdsPerType) {
-                console.log(`✅ Found ${allPostsMap.size} ads, stopping scroll`);
-                break;
+            // If not listing-only, stop early when we have enough posts
+            if (!CONFIG.listingOnly) {
+                if (allPostsMap.size >= CONFIG.maxAdsPerType) {
+                    console.log(`✅ Found ${allPostsMap.size} ads, stopping scroll`);
+                    break;
+                }
             }
 
             // Check if we've reached the end
@@ -118,18 +123,23 @@ class DivarCrawler {
                 break;
             }
 
-            // Check if load more button is visible
-            const buttonVisible = await page.evaluate(() => {
+            // If load more button is visible, click it to fetch more
+            const clickedLoadMore = await page.evaluate(() => {
                 const btn = document.querySelector('button.kt-button.kt-button--primary.kt-button--outlined.post-list__load-more-btn-be092');
                 if (!btn) return false;
                 const style = window.getComputedStyle(btn);
                 const rect = btn.getBoundingClientRect();
-                return style.display !== 'none' && style.visibility !== 'hidden' && rect.top >= 0 && rect.bottom <= window.innerHeight;
+                const visible = style.display !== 'none' && style.visibility !== 'hidden' && rect.top >= 0 && rect.bottom <= window.innerHeight;
+                if (visible) {
+                    btn.click();
+                    return true;
+                }
+                return false;
             });
 
-            if (buttonVisible) {
-                console.log('✅ Load more button appeared. Scrolling stopped.');
-                break;
+            if (clickedLoadMore) {
+                console.log('🔘 Clicked load more...');
+                await new Promise(r => setTimeout(r, 1500));
             }
 
             // Log progress every 10 posts
@@ -139,7 +149,8 @@ class DivarCrawler {
         }
 
         console.log(`📋 Total ads found after scrolling: ${allPostsMap.size}`);
-        return Array.from(allPostsMap.values()).slice(0, CONFIG.maxAdsPerType);
+        const arr = Array.from(allPostsMap.values());
+        return CONFIG.listingOnly ? arr : arr.slice(0, CONFIG.maxAdsPerType);
     }
 
     async getAdLinks(city, adType) {
@@ -314,44 +325,28 @@ class DivarCrawler {
             console.log(`\n📋 Processing ${adType.displayName}...`);
             
             const links = await this.getAdLinks(city, adType.slug);
-            const details = [];
-            
-            for (let i = 0; i < Math.min(links.length, CONFIG.maxAdsPerType); i++) {
-                const link = links[i];
-                console.log(`\n🔍 Processing ${i + 1}/${Math.min(links.length, CONFIG.maxAdsPerType)}: ${link.title}`);
-                
-                const detail = await this.extractAdDetails(link.link, city, adType.slug);
-                if (detail) {
-                    details.push(detail);
-                    console.log(`✅ Successfully extracted: ${detail.title}`);
-                    console.log(`   Metraj: ${detail.metraj} -> ${detail.metrajInt}`);
-                    if (detail.vadie) {
-                        console.log(`   Vadie: ${detail.vadie} -> ${detail.vadieInt}`);
+            if (CONFIG.listingOnly) {
+                this.results[adType.name][city] = links; // store only titles and links
+                console.log(`\n✅ Listing-only mode: ${adType.displayName} for ${CONFIG.cities.find(c => c.slug === city)?.displayName}: ${links.length} links`);
+            } else {
+                const details = [];
+                for (let i = 0; i < Math.min(links.length, CONFIG.maxAdsPerType); i++) {
+                    const link = links[i];
+                    console.log(`\n🔍 Processing ${i + 1}/${Math.min(links.length, CONFIG.maxAdsPerType)}: ${link.title}`);
+                    const detail = await this.extractAdDetails(link.link, city, adType.slug);
+                    if (detail) {
+                        details.push(detail);
+                        console.log(`✅ Successfully extracted: ${detail.title}`);
+                    } else {
+                        console.log(`❌ Failed to extract details from: ${link.title}`);
                     }
-                    if (detail.ejare) {
-                        console.log(`   Ejare: ${detail.ejare} -> ${detail.ejareInt}`);
+                    if (i < links.length - 1) {
+                        await new Promise(r => setTimeout(r, CONFIG.delayBetweenAds));
                     }
-                    if (detail.gheymatKol) {
-                        console.log(`   Gheymat Kol: ${detail.gheymatKol} -> ${detail.gheymatKolInt}`);
-                    }
-                    if (detail.gheymatHarMetr) {
-                        console.log(`   Gheymat Har Metr: ${detail.gheymatHarMetr} -> ${detail.gheymatHarMetrInt}`);
-                    }
-                    if (detail.tabaghe) {
-                        console.log(`   Tabaghe: ${detail.tabaghe} -> current=${detail.tabagheCurrent}, total=${detail.tabagheTotal}`);
-                    }
-                } else {
-                    console.log(`❌ Failed to extract details from: ${link.title}`);
                 }
-                
-                // Delay between ads
-                if (i < links.length - 1) {
-                    await new Promise(r => setTimeout(r, CONFIG.delayBetweenAds));
-                }
+                this.results[adType.name][city] = details;
+                console.log(`\n✅ Completed ${adType.displayName} for ${CONFIG.cities.find(c => c.slug === city)?.displayName}: ${details.length} ads`);
             }
-            
-            this.results[adType.name][city] = details;
-            console.log(`\n✅ Completed ${adType.displayName} for ${CONFIG.cities.find(c => c.slug === city)?.displayName}: ${details.length} ads`);
         }
     }
 
@@ -364,6 +359,17 @@ class DivarCrawler {
             }
             
             await this.saveResults();
+
+            // Print grand totals for visibility
+            let grandTotal = 0;
+            for (const adType of CONFIG.adTypes) {
+                for (const city of CONFIG.cities) {
+                    const arr = this.results[adType.name][city.slug] || [];
+                    grandTotal += arr.length;
+                    console.log(`📈 ${adType.displayName} - ${city.displayName}: ${arr.length}`);
+                }
+            }
+            console.log(`\n🔢 Grand total ads found: ${grandTotal}`);
             console.log('\n🎉 Crawling completed successfully!');
             
         } catch (error) {
